@@ -1,0 +1,5 @@
+a,a:hover {color: black; }
+header {padding-bottom: 50px;}
+.wrap{width: 980px; margin: 0 auto;}
+.wrap > button {margin-bottom: 10px;}
+/* .noresize {resize: none !important; } */
