@@ -1,5 +1,22 @@
 a,a:hover {color: black; }
-header {padding-bottom: 50px;}
+h1 {padding-bottom: 50px;}
 .wrap{width: 980px; margin: 0 auto;}
-.wrap > button {margin-bottom: 10px;}
-/* .noresize {resize: none !important; } */
+#titleBox {display: flex; justify-content: space-between; margin-bottom: 10px;}
+.tableTitle td {font-weight: bold; text-align: center; background: #eeeeee;}
+.colSize{width: 200px; background: #eeeeee;}
+tr td:first-child{font-weight: bold; text-align: center}
+.contentSize {height: 200px;}
+.textCenter {text-align: center;}
+.titlePoint {cursor: pointer;}
+.pagination {justify-content: center;}
+.searchBox {flex-basis: 400px;}
+/* #imgBox {display: flex;} */
+.imgSize {width: 90%}
+#imgBox img {width: 200px;}
+.viewImgBox {display: flex;}
+.viewImgBoxSize {flex-basis: 200px;}
+.delImg {opacity: 0.5;}
+.preHidden {text-align: center; margin: 10px 0 5px 0;}
+.btnClose {display: block; margin: 0 auto;}
+.textNowp {width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block;}
+.cursorBtn {cursor: pointer;}

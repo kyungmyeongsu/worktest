@@ -1,99 +1,200 @@
 <?php
-require_once('db.php');
+require('numCollection.php');
+require('outlet.php');
+$conn = getDB(serverName,serverId,serverPassword);
 ?>
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Board</title>
-        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <link rel="stylesheet" href="board.css">
-
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-        <script src="board.js"></script>
-    </head>
+  <?php
+    require('header.php');
+  ?>
     <body>
-        <header>
-            <h1>게시판</h1>
-        </header>
         <section class="wrap">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#writeModal">글쓰기</button>
+          <h1>게시판</h1>
+            <div id="titleBox">
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#writeModal">글쓰기</button>
+              <span>전체 게시글 : <?= $totalColum = totalColum($conn,(isset($_GET['searchKey']))?$_GET['searchKey']:""); ?></span>
+              <div class="input-group searchBox">
+                <?php
+                  if(!isset($_GET['searchKey'])) {
+                ?>
+                    <input type="text" class="form-control" id="searchText" placeholder="검색어를 입력해주세요">
+                <?php
+                  }else {
+                ?>
+                <input type="text" class="form-control" id="searchText" placeholder="검색어를 입력해주세요" value="<?= $_GET['searchKey'] ?>">
+                <?php
+                  }
+                ?>
+                <div class="input-group-append">
+                  <button class="btn btn-primary" id="searchPlay" type="button">검색</button>
+                </div>
+              </div>
+            </div>
+            
             <table class="table">
-                <tr>
+                <tr class="tableTitle">
+                    <!-- <td><input type="checkbox" id="selectTotal" name="totalSelect"></td> -->
                     <td>번호</td>
                     <td>제목</td>
                     <td>조회수</td>
+                    <td>작성자</td>
                     <td>작성일</td>
                 </tr>
                 <!-- 생성될 부분(반복될 부분) -->
                 <?php
-                $query = "SELECT * FROM dbo.TB_board";
-
-                $stmt = sqlsrv_query($dbconn,$query);
+                // 페이지 번호 유무
+                $pageNo = isset($_GET['pageNo'])?$_GET['pageNo']-1:0;
                 
-                while($row = sqlsrv_fetch_array($stmt)){
+                
+                //검색 사용 유무를 통한 검색
+                $searchVal = isset($_GET['searchKey'])?$_GET['searchKey']:"";
+                $rows = getList($conn,$pageNo, $searchVal, $listScale);
                 ?>
-                    <tr>
-                        <td><?= $row['num']?></td>
-                        <td><a href="board_view.php?userId=<?= $row['userId']?>"><?= $row['title'] ?></a></td>
-                        <td><?= $row['hits'] ?></td>
-                        <td><?= $row['createDate']->format('Y-m-d H:i:s') ?></td>
-                    </tr>
+                
                 <?php
-                }
+                $n = 1;
+                foreach ($rows as $row) :
+                ?>
+                    <tr class="textCursor">
+                        <!-- <td><input type="checkbox" class="selectPoint" value="<?php //echo $row['num']?>"></td> -->
+                        <td id="rowNo" class="textCenter"><?= (($totalColum - $n) +1) - (($pageNo) * $listScale) ?></td>
+                        <td id="titleNum<?= $row['num']?>"><a href="board_view.php?num=<?= $row['num'] ?>&pageNo=<?= $pageNo+1 ?>&searchKey=<?= $searchVal ?>"><?= $row['title'] ?></a></td>
+                        <td class="textCenter"><?= $row['hits'] ?></td>
+                        <td class="textCenter"><?= $row['userId'] ?></td>
+                        <td class="textCenter"><?= $row['createDate'] ?></td>
+                    </tr>
+
+                <?php
+                $n++;
+                endforeach
                 ?>
                 <!-- 반복 끝 -->
-            </table>
+              </table>
+              <?php
+              //전체 페이지 수 & 페이지 구현
+              
+              $totalPage = getSearchTotal($conn,$searchVal,$listScale); //전체 페이지 수
+              $blockPage = floor($totalPage/$pageScale); //묶음 페이지 수
+              $nowPage = floor($pageNo/$pageScale);//현재 묶음 페이지 번호
+              
+              ?>
+              <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                  <li class="page-item">
+                    <?php 
+                      if($nowPage > 0){
+                        $preStart = ($nowPage-1)*$pageScale; 
+                    ?>
+
+                    <a class="page-link" href="?pageNo=<?= $preStart + 1 ?>&searchKey=<?= $searchVal ?>" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                        
+                    <?php
+                      }
+                    ?>
+                  </li>
+                  <?php
+                    $blockPageNo = $nowPage * $pageScale;
+                    for($i = $blockPageNo; $i < $blockPageNo + $pageScale; $i++){
+                      if($i < $totalPage){
+                        if($pageNo == $i) {
+                  ?>
+                  
+                  <li class="page-item active"><a class="page-link" href="?pageNo=<?= $i+1 ?>&searchKey=<?= $searchVal ?>"><?= $i + 1 ?></a></li>
+                        
+                  <?php
+                        }else {
+                  ?>
+                  <li class="page-item"><a class="page-link" href="?pageNo=<?= $i+1 ?>&searchKey=<?= $searchVal ?>"><?= $i + 1 ?></a></li>
+                  <?php
+                        }
+                      }
+                    }
+                  ?>
+                  <li class="page-item">
+                    <?php
+                      if($nowPage < $blockPage){
+                    ?>
+
+                    <a class="page-link" href="?pageNo=<?= $i + 1 ?>&searchKey=<?= $searchVal ?>" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                      <span class="sr-only">Next</span>
+                    </a>
+                    
+                    <?php
+                      }
+                    ?>
+                  </li>
+                </ul>
+              </nav>
+
         </section>
+
+
+        <div class="modal fade" id="writeModal" tabindex="-1" role="dialog" aria-labelledby="boardModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title" id="boardModalLabel">작성하기</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form onsubmit="return writeCheck()" action="crud.php" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="proce" value="writeForm">
+                  <div class="form-group">
+                    <label for="title" class="col-form-label">제목 : </label>
+                    <input type="text" class="form-control" name="title" id="title">
+                  </div>
+                  <div class="form-group">
+                    <label for="writeContent" class="col-form-label">내용 : </label>
+                    <textarea class="form-control" name="writeContent" id="writeContent" rows="4"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="userId" class="col-form-label">작성자 : </label>
+                    <input type="text" class="form-control" name="userId" id="userId">
+                  </div>
+                  <div class="form-group">
+                    <label for="userPassword" class="col-form-label">비밀번호 : </label>
+                    <input type="password" class="form-control" name="userPassword" id="userPassword">
+                  </div>
+                  <div class="form-group">
+                    <label for="fileToUpload" class="col-form-label">첨부파일 : </label>
+                    <input type="file" name="fileToUpload[]" id="imgPreview" multiple>
+                  </div>
+                  <div class="form-group">
+                    <div id="imgBox"></div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">작성하기</button>
+                </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
     </body>
 </html>
 
 <?php
+//파일 오류 경고창
+if(isset($_GET['fileup'])) {
+  if($_GET['fileup'] === "noExt") {
+    print "<script>alert('잘못된 파일입니다.');</script>";
+    print("<script>location.href='board.php';</script>"); 
+  }else if($_GET['fileup'] === "noSize") {
+    print "<script>alert('파일의 용량 초과 입니다.');</script>";
+    print("<script>location.href='board.php';</script>"); 
+  }
+}
 //데이터 출력 후 statement를 해제한다
-sqlsrv_free_stmt($stmt);
+unset($stmt);
 //데이터 베이스 접속을 해제한다
-sqlsrv_close($dbconn);
+unset($conn);
 ?>
-
-
-<div class="modal fade" id="writeModal" tabindex="-1" role="dialog" aria-labelledby="boardModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title" id="boardModalLabel">작성하기</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form action="outlet.php" method="POST">
-        <input type="hidden" name="proce" value="writeForm">
-          <div class="form-group">
-            <label for="title" class="col-form-label">제목 : </label>
-            <input type="text" class="form-control" name="title" id="title">
-          </div>
-          <div class="form-group">
-            <label for="writeContent" class="col-form-label">내용 : </label>
-            <textarea class="form-control" name="writeContent" id="writeContent" rows="4"></textarea>
-          </div>
-          <div class="form-group">
-            <label for="userId" class="col-form-label">작성자 : </label>
-            <input type="text" class="form-control" name="userId" id="userId">
-          </div>
-          <div class="form-group">
-            <label for="userPassword" class="col-form-label">비밀번호 : </label>
-            <input type="password" class="form-control" name="userPassword" id="userPassword">
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-            <button type="submit" class="btn btn-primary">작성하기</button>
-         </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
