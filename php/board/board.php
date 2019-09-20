@@ -34,18 +34,19 @@ $conn = getDB(serverName,serverId,serverPassword);
             
             <table class="table">
                 <tr class="tableTitle">
-                    <!-- <td><input type="checkbox" id="selectTotal" name="totalSelect"></td> -->
                     <td>번호</td>
                     <td>제목</td>
                     <td>조회수</td>
+                    <td>댓글수</td>
                     <td>작성자</td>
                     <td>작성일</td>
                 </tr>
                 <!-- 생성될 부분(반복될 부분) -->
                 <?php
                 // 페이지 번호 유무
+                $listScale = 5;//한번에 볼 수 있는 리스트 개수
+                $pageScale = 5; //보여질 넘버 수 ex)1 2 3 4 5 >>
                 $pageNo = isset($_GET['pageNo'])?$_GET['pageNo']-1:0;
-                
                 
                 //검색 사용 유무를 통한 검색
                 $searchVal = isset($_GET['searchKey'])?$_GET['searchKey']:"";
@@ -55,12 +56,13 @@ $conn = getDB(serverName,serverId,serverPassword);
                 <?php
                 $n = 1;
                 foreach ($rows as $row) :
+                  $commetRows = commentList($conn,$row['num']);
                 ?>
                     <tr class="textCursor">
-                        <!-- <td><input type="checkbox" class="selectPoint" value="<?php //echo $row['num']?>"></td> -->
                         <td id="rowNo" class="textCenter"><?= (($totalColum - $n) +1) - (($pageNo) * $listScale) ?></td>
-                        <td id="titleNum<?= $row['num']?>"><a href="board_view.php?num=<?= $row['num'] ?>&pageNo=<?= $pageNo+1 ?>&searchKey=<?= $searchVal ?>"><?= $row['title'] ?></a></td>
+                        <td id="titleNum<?= $row['num']?>"><a href="board_view.php?num=<?= $row['num'] ?>&pageNo=<?= $pageNo+1 ?>&searchKey=<?= $searchVal ?>"><?= htmlspecialchars($row['title']) ?></a></td>
                         <td class="textCenter"><?= $row['hits'] ?></td>
+                        <td class="textCenter"><?= count($commetRows) ?></td>
                         <td class="textCenter"><?= $row['userId'] ?></td>
                         <td class="textCenter"><?= $row['createDate'] ?></td>
                     </tr>
@@ -73,12 +75,12 @@ $conn = getDB(serverName,serverId,serverPassword);
               </table>
               <?php
               //전체 페이지 수 & 페이지 구현
-              
               $totalPage = getSearchTotal($conn,$searchVal,$listScale); //전체 페이지 수
               $blockPage = floor($totalPage/$pageScale); //묶음 페이지 수
               $nowPage = floor($pageNo/$pageScale);//현재 묶음 페이지 번호
               
               ?>
+              <!-- 숫자 페이징 -->
               <nav aria-label="Page navigation example">
                 <ul class="pagination">
                   <li class="page-item">
@@ -133,7 +135,7 @@ $conn = getDB(serverName,serverId,serverPassword);
 
         </section>
 
-
+        <!-- 글쓰기 modal창 -->
         <div class="modal fade" id="writeModal" tabindex="-1" role="dialog" aria-labelledby="boardModalLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">
             <div class="modal-content">

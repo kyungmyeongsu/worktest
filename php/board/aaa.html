@@ -111,3 +111,26 @@ if(isset($_POST) and $_SERVER['REQUEST_METHOD'] == "POST")
 echo json_encode($data);
  
 ?>
+
+
+//     if($proce === "loginForm") {
+    //         $commitId = $_POST["commitId"];
+    //         $commitPassword = $_POST["commitPassword"];
+    //         $no = $_POST['rowNumber'];
+    
+    //         $query =<<<SQL
+    // SELECT userId, userPassword FROM dbo.TB_board where num = :num;
+    // SQL;
+    //         $stmt = $conn->prepare($query);
+    //         $stmt->bindValue(':num',$no,PDO::PARAM_INT);
+    //         $stmt->execute();
+    //         $row = $stmt->fetch();
+    //         if($commitId === $row['userId']) {
+    //             if(password_verify($commitPassword,$row['userPassword'])) {
+    //                 header("location:/board_view.php?num=$no");
+    //             }else
+    //                 header("location:/board_view.php?reInput=no");
+    //         }else
+    //             header("location:/board_view.php?reInput=no");
+            
+    //     }

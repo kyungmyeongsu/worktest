@@ -67,6 +67,13 @@ $(document).ready(function(){
         // console.log($numVal);
         $("#proceName").val(procVal);
     });
+
+    //댓글 수정, 삭제 버튼 클릭시 해당 컬럼 번호 추출
+    $(".commetNoVal").on("click", function(){
+        var commnetVal = $(this).find('.hiddenBox').text();
+        console.log(commnetVal);
+        $("#commNum").val(commnetVal);
+    });
     
     //파일 업로드 함수
     $("#imgPreview").on("change", fileSelect);
@@ -148,6 +155,40 @@ function loginCheck() {
     }else true;
 }
 
+//수정하기 비어있는 input 체크
+function emptyCheck() {
+    if($('#viewTitle').val().length < 1) {
+        alert('제목을 입력해 주세요.');
+        $('#viewTitle').focus();
+        return false;
+    }else if($('#viewId').val().length < 1) {
+        alert('작성자를 입력해 주세요.');
+        $('#viewId').focus();
+        return false;
+    }else if($('#viewPassword').val().length < 1) {
+        alert('비밀번호를 입력해 주세요.');
+        $('#viewPassword').focus();
+        return false;
+    }else true;
+}
+
+//댓글 작성하기 비어있느 input 체크
+function emptyCommentCheck() {
+    if($('#commentId').val().length < 1) {
+        alert('작성자를 입력해 주세요.');
+        $('#commentId').focus();
+        return false;
+    }else if($('#commentPassword').val().length < 1) {
+        alert('비밀번호를 입력해 주세요.');
+        $('#commentPassword').focus();
+        return false;
+    }else if($('#commentContent').val().length < 1) {
+        alert('내용을 입력해 주세요.');
+        $('#commentContent').focus();
+        return false;
+    }else true;
+}
+
 //글쓰기 페이지 파일 체크
 function fileSelect(e) {
     var enrollFile = [];
@@ -171,9 +212,11 @@ function fileSelect(e) {
 
         var reader = new FileReader();
         reader.onload = function(e) {
-            var imgHtml = "<img src=\"" + e.target.result + "\" />";
-            $("#imgBox").append(imgHtml);
-            $("#imgBox img").addClass("imgSize");
+            if(!(f.type.match("text/*"))) {
+                var imgHtml = "<img src=\"" + e.target.result + "\" />";
+                $("#imgBox").append(imgHtml);
+                $("#imgBox img").addClass("imgSize");
+            }
         }
         reader.readAsDataURL(f);
     });
@@ -184,7 +227,7 @@ function fileListSel(e) {
     var enrollFile = [];
     var files = e.target.files;
     var filesArr = Array.prototype.slice.call(files);
-    // $("#imgBox").html("");
+    $("#imgBox").html("");
     filesArr.forEach(function(f) {
         if(!(f.type.match("image/*" ) || f.type.match("text/*" ))) {
             alert("잘못된 파일입니다.");
@@ -202,9 +245,14 @@ function fileListSel(e) {
 
         var reader = new FileReader();
         reader.onload = function(e) {
-            var imgHtml = "<img src=\"" + e.target.result + "\" />";
-            $("#imgBox").append(imgHtml);
-            $("#imgBox img").addClass("imgSize");
+            if(!(f.type.match("text/*"))) {
+                var imgHtml = "<img src=\"" + e.target.result + "\" />";
+                $("#imgBox").append(imgHtml);
+                $("#imgBox img").addClass("imgSize");
+            }else {
+                var textHtml = "<img src=\"uploads/textIcon.png\" />";
+                $("#imgBox").append(textHtml);
+            }
         }
         reader.readAsDataURL(f);
     });

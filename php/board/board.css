@@ -4,13 +4,12 @@ h1 {padding-bottom: 50px;}
 #titleBox {display: flex; justify-content: space-between; margin-bottom: 10px;}
 .tableTitle td {font-weight: bold; text-align: center; background: #eeeeee;}
 .colSize{width: 200px; background: #eeeeee;}
-tr td:first-child{font-weight: bold; text-align: center}
+.viewLi tr td:first-child{font-weight: bold; text-align: center}
 .contentSize {height: 200px;}
 .textCenter {text-align: center;}
 .titlePoint {cursor: pointer;}
 .pagination {justify-content: center;}
 .searchBox {flex-basis: 400px;}
-/* #imgBox {display: flex;} */
 .imgSize {width: 90%}
 #imgBox img {width: 200px;}
 .viewImgBox {display: flex;}
@@ -20,3 +19,16 @@ tr td:first-child{font-weight: bold; text-align: center}
 .btnClose {display: block; margin: 0 auto;}
 .textNowp {width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block;}
 .cursorBtn {cursor: pointer;}
+#commentWrap {padding: 40px 0 40PX 0;}
+#commentBox {display: flex; justify-content: space-between;}
+.commentWidth {flex-basis: 47%;}
+.comtBtn {background-color: #999; border: none; border-radius: 0 10% 10% 0; font-weight: bold; color: white;}
+.commentInbox {display: flex; height: 100px;}
+.commentInbox>textarea {flex: 8; resize: none;}
+.commentInbox>button {flex: 1;}
+.commentTotal {font-size: 16px; }
+.commtLi tr td:first-child {width: 50%}
+.commUpBtn {width: 15%}
+.hiddenBox {display: none;}
+.resizeNo {resize: none;}
+.commBtnBox {display: flex; justify-content: flex-end;}

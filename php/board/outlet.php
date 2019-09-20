@@ -65,7 +65,9 @@ SQL;
 function getHits($conn,$no) {
     // global $conn;
     $query =<<<SQL
-UPDATE dbo.TB_board SET hits = hits + 1 where num = :num;
+UPDATE dbo.TB_board 
+    SET hits = hits + 1 
+        where num = :num;
 SQL;
     $stmt = $conn->prepare($query);
     $stmt->bindValue(':num',$no,PDO::PARAM_INT);
@@ -76,7 +78,9 @@ SQL;
 function getDetail($conn,$no) {
     // global $conn;
     $query =<<<SQL
-SELECT num, title, hits, createDate, userId, writeContent  FROM dbo.TB_board where num = :num;
+SELECT num, title, hits, createDate, userId, writeContent  
+    FROM dbo.TB_board 
+        where num = :num;
 SQL;
     $stmt = $conn->prepare($query);
     $stmt->bindValue(':num',$no,PDO::PARAM_INT);
@@ -106,10 +110,12 @@ SQL;
     return $totalColum;
 }
 
-//파일 관련정보 받아오기
+//같은 게시글 파일 관련정보 받아오기
 function fileInfo($conn,$no) {
     $query =<<<SQL
-SELECT num, upFileName, fileNum, downCount, realFileName, imgYN  FROM dbo.TB_file where fileNum = :num;
+SELECT num, upFileName, fileNum, downCount, realFileName, imgYN  
+    FROM dbo.TB_file 
+        where fileNum = :num;
 SQL;
     $stmt = $conn->prepare($query);
     $stmt->bindValue(':num',$no,PDO::PARAM_INT);
@@ -118,13 +124,43 @@ SQL;
     return $result;
 }
 
+//선택 게시글 파일 관련정보 받아오기
+function selectFileInfo($conn,$no) {
+    $query =<<<SQL
+SELECT num, upFileName, fileNum, downCount, realFileName, imgYN  
+    FROM dbo.TB_file 
+        where num = :num;
+SQL;
+    $stmt = $conn->prepare($query);
+    $stmt->bindValue(':num',$no,PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetch();
+    return $result;
+}
+
 //다운로드 시 다운로드 횟수 증가
 function downFile($conn,$no) {
     $query=<<<SQL
-UPDATE dbo.TB_file SET downCount = downCount + 1 WHERE num = :num;
+UPDATE dbo.TB_file SET downCount = downCount + 1 
+    WHERE num = :num;
 SQL;
     $stmt = $conn->prepare($query);
     $stmt->bindValue('num',$no,PDO::PARAM_INT);
     $stmt->execute();
 }
+
+//댓글 리스트 가져오기
+function commentList($conn,$no) {
+    $query =<<<SQL
+SELECT num, commentContent, commentId 
+    FROM dbo.TB_comment
+        WHERE commentNum = :commentNum;
+SQL;
+    $stmt = $conn->prepare($query);
+    $stmt->bindValue(':commentNum',$no,PDO::PARAM_INT);
+    $stmt->execute();
+    $row = $stmt->fetchAll();
+    return $row;
+}
+
 ?>
