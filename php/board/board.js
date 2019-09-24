@@ -9,11 +9,11 @@ $(document).ready(function(){
     });
 
     //수정 취소 버튼 클릭시
-    $("#cancelBtn").on("click", function(){
+    $(document).on("click","#cancelBtn", function(){
         var pageNum = $('#pageNum').val();
         var searchKeyword = $('#searchKeyword').val();
         var num = $('#rowNumber').val();
-        location.href="board_view.php?num="+ num +"&pageNo=" + pageNum + "&searchKey=" + searchKeyword;
+        location.href="board_view.php?num="+ num +"&hitUp=hitUp&pageNo=" + pageNum + "&searchKey=" + searchKeyword;
         // window.location = document.referrer;
     });
 
@@ -62,17 +62,24 @@ $(document).ready(function(){
     });
 
     //삭제값, 수정값 가져오기
-    $(".controlBtn").on("click", function(){
+    $(document).on("click",".controlBtn", function(){
         var procVal = $(this).val();
         // console.log($numVal);
         $("#proceName").val(procVal);
     });
 
+    //삭제값, 수정값 가져오기
+    $(document).on("click",".controlBtnComm", function(){
+        var procVal = $(this).val();
+        // console.log($numVal);
+        $("#proceNameComm").val(procVal);
+    });
+
     //댓글 수정, 삭제 버튼 클릭시 해당 컬럼 번호 추출
-    $(".commetNoVal").on("click", function(){
+    $(document).on("click",".commetNoVal", function(){
         var commnetVal = $(this).find('.hiddenBox').text();
-        console.log(commnetVal);
-        $("#commNum").val(commnetVal);
+        // console.log(commnetVal);
+        $("#commNumComm").val(commnetVal);
     });
     
     //파일 업로드 함수
@@ -231,13 +238,13 @@ function fileListSel(e) {
     filesArr.forEach(function(f) {
         if(!(f.type.match("image/*" ) || f.type.match("text/*" ))) {
             alert("잘못된 파일입니다.");
-            $('#imgPreview').val("");
+            $('#viewImgPreview').val("");
             return;
         }
 
         if(f.size > 5000000){
             alert("파일의 용량 초과 입니다.");
-            $("#imgPreview").val("");
+            $("#viewImgPreview").val("");
             return;
         };
 

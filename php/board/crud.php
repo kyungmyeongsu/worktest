@@ -237,7 +237,7 @@ SQL;
                 $stmt->bindValue(':fileNum',$no,PDO::PARAM_INT);
                 $stmt->execute();
                 }
-                header("location:/board_view.php?num=$no&pageNo=$pageNum&searchKey=$searchKeyword");
+                header("location:/board_view.php?num=$no&hitUp=hitUp&pageNo=$pageNum&searchKey=$searchKeyword");
             }else
                 header("location:/board_view.php?num=$no&reInput=no&update=update&pageNo=$pageNum&searchKey=$searchKeyword");
         }else
@@ -290,7 +290,8 @@ SQL;
 
         //공백 입력했을 때 체크
         if(trim($commentContent) == "" || trim($commentId) == "" || trim($commentPassword) == "") {
-            header("location:/board_view.php?num=$no&pageNo=$pageNum&searchKey=$searchKeyword");
+            echo "error";
+            // header("location:/board_view.php?num=$no&pageNo=$pageNum&searchKey=$searchKeyword");
             exit();
         }
 
@@ -311,17 +312,18 @@ SQL;
         // header("location:/board_view.php?num=$no&pageNo=$pageNum&searchKey=$searchKeyword");
     }
 
+    
+
     //댓글 수정전 확인 절차
     if($proce === "commtUpdateForm") {
-        $commitId = $_POST["commitId"];
-        $commitPassword = $_POST["commitPassword"];
-        $no = $_POST['commNum'];
-        $num = $_POST['rowNumber'];
-        $pageNum = $_POST["pageNum"];
-        $searchKeyword = $_POST["searchKeyword"];
+        $commitId = $_POST["commitIdComm"];
+        $commitPassword = $_POST["commitPasswordComm"];
+        $no = $_POST['commNumComm'];
+        $pageNum = $_POST["pageNumComm"];
+        $searchKeyword = $_POST["searchKeywordComm"];
         
         $query =<<<SQL
-SELECT commentId, commentPassword FROM dbo.TB_comment where num = :num;
+SELECT * FROM dbo.TB_comment where num = :num;
 SQL;
         $stmt = $conn->prepare($query);
         $stmt->bindValue(':num',$no,PDO::PARAM_INT);
@@ -329,27 +331,46 @@ SQL;
         $row = $stmt->fetch();
         if($commitId === $row['commentId']) {
             if(password_verify($commitPassword,$row['commentPassword'])) {
-                echo $commitId."<br>".$commitPassword."<br>".$no."<br>".$proce;
-                header("location:/board_view.php?num=$num&commUp=$no&pageNo=$pageNum&searchKey=$searchKeyword");
+                // header("location:/board_view.php?num=$num&commUp=$no&pageNo=$pageNum&searchKey=$searchKeyword");
+                ?>
+                
+                  <input type="hidden" name="proce" value="commtUpdateProce">
+                  <input type="hidden" name="commentNum" value="<?= $row['num'] ?>">
+                  <input type="hidden" name="commitIdComm" value="<?= $row['commentId'] ?>">
+                  <input type="hidden" name="pageNum" value="<?= $pageNum ?>">
+                  <input type="hidden" name="searchKeyword" value="<?= $searchKeyword ?>">
+                  <tr>
+                    <td><textarea class="form-control resizeNo" name="commentContentComm"><?= htmlspecialchars($row['commentContent']) ?></textarea></td>
+                    <td><?= htmlspecialchars($row['commentId']) ?></td>
+                    <td>비밀번호 <input class="form-control" type="password" name="commitPasswordComm"></td>
+                    <td class="commUpBtn">
+                      <button type="button" class="btn btn-secondary" id="cancelBtn">취소</button>
+                      <button type="button" class="btn btn-primary" id="submitCommBtn">확인</button>
+                    </td>
+                  </tr>
+                
+                <?php
             }else
-                header("location:/board_view.php?num=$num&reInput=no&pageNo=$pageNum&searchKey=$searchKeyword");
+                echo "error";
+                // header("location:/board_view.php?num=$num&reInput=no&pageNo=$pageNum&searchKey=$searchKeyword");
         }else
-            header("location:/board_view.php?num=$num&reInput=no&pageNo=$pageNum&searchKey=$searchKeyword");
+            echo "error";
+            // header("location:/board_view.php?num=$num&reInput=no&pageNo=$pageNum&searchKey=$searchKeyword");
     }
 
     //댓글 수정하기
     if($proce === "commtUpdateProce") {
-        $commitId = $_POST["commitId"];
-        $commitPassword = $_POST["commitPassword"];
-        $commentContent = $_POST["commentContent"];
+        $commitId = $_POST["commitIdComm"];
+        $commitPassword = $_POST["commitPasswordComm"];
+        $commentContent = $_POST["commentContentComm"];
         $no = $_POST['commentNum'];
-        $num = $_POST['rowNumber'];
         $pageNum = $_POST["pageNum"];
         $searchKeyword = $_POST["searchKeyword"];
 
         //공백 입력했을 때 체크
         if(trim($commentContent) == "" || trim($commitId) == "" || trim($commitPassword) == "") {
-            header("location:/board_view.php?num=$num&commUp=$no&pageNo=$pageNum&searchKey=$searchKeyword");
+            echo "error";
+            // header("location:/board_view.php?num=$num&commUp=$no&pageNo=$pageNum&searchKey=$searchKeyword");
             exit();
         }
 
@@ -372,21 +393,24 @@ SQL;
                 $stmt->bindValue(':commentNum',$no,PDO::PARAM_INT);
                 $stmt->execute();
                 
-                header("location:/board_view.php?num=$num&pageNo=$pageNum&searchKey=$searchKeyword");
-            }else
-                header("location:/board_view.php?num=$num&reInput=no&commUp=$no&pageNo=$pageNum&searchKey=$searchKeyword");
-        }else
-            header("location:/board_view.php?num=$num&reInput=no&commUp=$no&pageNo=$pageNum&searchKey=$searchKeyword");
+                // header("location:/board_view.php?num=$num&complete=complete&pageNo=$pageNum&searchKey=$searchKeyword");
+            }else {
+                echo "error";
+                // header("location:/board_view.php?num=$num&reInput=no&pageNo=$pageNum&searchKey=$searchKeyword");
+            }
+        }else {
+            echo "error";
+            // header("location:/board_view.php?num=$num&reInput=no&pageNo=$pageNum&searchKey=$searchKeyword");
+        }
     }
 
     //댓글 삭제하기
     if($proce === "commtDeleteForm") {
-        $commitId = $_POST["commitId"];
-        $commitPassword = $_POST["commitPassword"];
-        $no = $_POST['commNum'];
-        $num = $_POST['rowNumber'];
-        $pageNum = $_POST["pageNum"];
-        $searchKeyword = $_POST["searchKeyword"];
+        $commitId = $_POST["commitIdComm"];
+        $commitPassword = $_POST["commitPasswordComm"];
+        $no = $_POST['commNumComm'];
+        $pageNum = $_POST["pageNumComm"];
+        $searchKeyword = $_POST["searchKeywordComm"];
 
         $query =<<<SQL
 SELECT commentId, commentPassword FROM dbo.TB_comment where num = :num;
@@ -403,11 +427,14 @@ SQL;
                 $stmt = $conn->prepare($query);
                 $stmt->bindValue(':num',$no,PDO::PARAM_INT);
                 $stmt->execute();
-                header("location:/board_view.php?num=$num&pageNo=$pageNum&searchKey=$searchKeyword");
+                echo "delete";
+                // header("location:/board_view.php?num=$num&pageNo=$pageNum&searchKey=$searchKeyword");
             }else
-                header("location:/board_view.php?num=$num&reInput=no&pageNo=$pageNum&searchKey=$searchKeyword");
+                echo "error";
+                // header("location:/board_view.php?num=$num&reInput=no&pageNo=$pageNum&searchKey=$searchKeyword");
         }else
-            header("location:/board_view.php?num=$num&reInput=no&pageNo=$pageNum&searchKey=$searchKeyword");
+            echo "error";
+            // header("location:/board_view.php?num=$num&reInput=no&pageNo=$pageNum&searchKey=$searchKeyword");
     }
 }
 

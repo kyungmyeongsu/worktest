@@ -54,22 +54,23 @@ $conn = getDB(serverName,serverId,serverPassword);
                 ?>
                 
                 <?php
-                $n = 1;
+                $boardNumber = (($totalColum - 1) +1) - (($pageNo) * $listScale);
                 foreach ($rows as $row) :
                   $commetRows = commentList($conn,$row['num']);
+                  $TotalCommNum = TotalCommentNum($conn,$row['num']);
                 ?>
                     <tr class="textCursor">
-                        <td id="rowNo" class="textCenter"><?= (($totalColum - $n) +1) - (($pageNo) * $listScale) ?></td>
-                        <td id="titleNum<?= $row['num']?>"><a href="board_view.php?num=<?= $row['num'] ?>&pageNo=<?= $pageNo+1 ?>&searchKey=<?= $searchVal ?>"><?= htmlspecialchars($row['title']) ?></a></td>
+                        <td id="rowNo" class="textCenter"><?= $boardNumber ?></td>
+                        <td id="titleNum<?= $row['num']?>"><a href="board_view.php?num=<?= $row['num'] ?>&hitUp=hitUp&pageNo=<?= $pageNo+1 ?>&searchKey=<?= $searchVal ?>"><?= htmlspecialchars($row['title']) ?></a></td>
                         <td class="textCenter"><?= $row['hits'] ?></td>
-                        <td class="textCenter"><?= count($commetRows) ?></td>
+                        <td class="textCenter"><?= $TotalCommNum ?></td>
                         <td class="textCenter"><?= $row['userId'] ?></td>
                         <td class="textCenter"><?= $row['createDate'] ?></td>
                     </tr>
 
                 <?php
-                $n++;
-                endforeach
+                $boardNumber--;
+                endforeach;
                 ?>
                 <!-- 반복 끝 -->
               </table>
@@ -166,7 +167,7 @@ $conn = getDB(serverName,serverId,serverPassword);
                   </div>
                   <div class="form-group">
                     <label for="fileToUpload" class="col-form-label">첨부파일 : </label>
-                    <input type="file" name="fileToUpload[]" id="imgPreview" multiple>
+                    <input type="file" name="fileToUpload[]" id="viewImgPreview" multiple>
                   </div>
                   <div class="form-group">
                     <div id="imgBox"></div>

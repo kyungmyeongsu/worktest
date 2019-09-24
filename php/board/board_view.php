@@ -5,8 +5,9 @@ $no = $_GET['num'];
 $pageNum = $_GET['pageNo'];
 $searchKeyword = $_GET['searchKey'];
 $conn = getDB(serverName,serverId,serverPassword);
-if(isset($_GET['update'])?true:false) {
-}else if(isset($_GET['commUp'])) {} else getHits($conn,$no);
+if(isset($_GET['hitUp'])) {
+  getHits($conn,$no);
+}
 $listSet = getDetail($conn,$no);
 $fileRows = fileInfo($conn,$no);
 $commetRows = commentList($conn,$no);
@@ -174,48 +175,27 @@ $commetRows = commentList($conn,$no);
           </div>
 
           <!-- 댓글 리스트 -->
-          <div>
-            <h4>댓글 내용 <span class="commentTotal">&#40; 총 댓글수 : <?= count($commetRows) ?> &#41;</span></h4>
+          <div id="commentListTable">
+            <h4>댓글 내용 <span class="commentTotal">&#40; 총 댓글수 : <b class="totalComment"><?= count($commetRows) ?></b> &#41;</span></h4>
+            <form id="commentUpForm" action="crud.php" method="POST">
             <table class="table commtLi">
               <?php
+              //댓글 수정 부분
                 foreach ($commetRows as $commentRow) {
-                  if(isset($_GET['commUp'])) {
-                    if($commentRow['num'] == $_GET['commUp']) {
               ?>
-                <form id="commentUpForm" action="crud.php" method="POST">
-                  <input type="hidden" name="proce" value="commtUpdateProce">
-                  <input type="hidden" name="commentNum" value="<?= $commentRow['num'] ?>">
-                  <input type="hidden" name="commitId" value="<?= $commentRow['commentId'] ?>">
-                  <input type="hidden" name="pageNum" value="<?= $pageNum ?>">
-                  <input type="hidden" name="searchKeyword" value="<?= $searchKeyword ?>">
-                  <input type="hidden" name="rowNumber" value="<?= $listSet['num'] ?>">
-                  <tr>
-                    <td><textarea class="form-control resizeNo" name="commentContent"><?= htmlspecialchars($commentRow['commentContent']) ?></textarea></td>
-                    <td><?= htmlspecialchars($commentRow['commentId']) ?></td>
-                    <td>비밀번호 <input class="form-control" type="password" name="commitPassword"></td>
-                    <td class="commUpBtn">
-                      <button type="button" class="btn btn-secondary" id="cancelBtn">취소</button>
-                      <button type="submit" class="btn btn-primary">확인</button>
-                    </td>
-                  </tr>
-                </form>
-              <?php
-                    }
-                  }else {
-              ?>
-                <tr>
+                <tr class="commentViewList">
                   <td><?= nl2br(htmlspecialchars($commentRow['commentContent'])) ?></td>
                   <td><?= htmlspecialchars($commentRow['commentId']) ?></td>
                   <td class="commBtnBox">
-                    <button class="btn btn-danger controlBtn commetNoVal" data-toggle="modal" data-target="#loginModal" value="commtDeleteForm">삭제<span class="hiddenBox"><?= $commentRow['num'] ?></span></button>
-                    <button class="btn btn-secondary controlBtn commetNoVal" data-toggle="modal" data-target="#loginModal" value="commtUpdateForm">수정<span class="hiddenBox"><?= $commentRow['num'] ?></span></button>
+                    <button type="button" class="btn btn-danger controlBtnComm commetNoVal" data-toggle="modal" data-target="#commloginModal" value="commtDeleteForm">삭제<span class="hiddenBox"><?= $commentRow['num'] ?></span></button>
+                    <button type="button" class="btn btn-secondary controlBtnComm commetNoVal" data-toggle="modal" data-target="#commloginModal" value="commtUpdateForm">수정<span class="hiddenBox"><?= $commentRow['num'] ?></span></button>
                   </td>
                 </tr>
               <?php
-                  }
                 }
               ?>
             </table>
+            </form>
           </div>
           <?php
             }
@@ -260,10 +240,45 @@ $commetRows = commentList($conn,$no);
         </div>
       </div>
     </div>
+
+    <div class="modal fade" id="commloginModal" tabindex="-1" role="dialog" aria-labelledby="commloginModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="commloginModalLabel">로그인</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+            <div class="modal-body">
+              <form onsubmit="return loginCheck()" id="commentFormTable">
+                <input type="hidden" name="proce" id="proceNameComm" value="">
+                <input type="hidden" name="pageNumComm" value="<?= $pageNum ?>">
+                <input type="hidden" name="searchKeywordComm" value="<?= $searchKeyword ?>">
+                <input type="hidden" name="rowNumberComm" id="rowNumberComm" value="<?= $listSet['num'] ?>">
+                <input type="hidden" name="commNumComm" id="commNumComm" value="">
+                <div class="form-group">
+                  <label for="commitId" class="col-form-label">작성자 : </label>
+                  <input type="text" class="form-control" name="commitIdComm" id="commitIdComm">
+                </div>
+                <div class="form-group">
+                  <label for="commitPassword" class="col-form-label">비밀번호 : </label>
+                  <input type="password" class="form-control" name="commitPasswordComm" id="commitPasswordComm">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary cloose" data-dismiss="modal">닫기</button>
+                  <button type="button" class="btn btn-primary" id="commSubBtn">확인</button>
+                </div>
+              </form>
+            </div>
+        </div>
+      </div>
+    </div>
 </html>
-<!-- 다운로드 클릭시 다운로드 수 카운트 새로고침 -->
+
 <script type="text/javascript">
   var filedownUrl = "./crud.php";
+  // 다운로드 클릭시 다운로드 수 카운트 새로고침
   $(document).ready(function() {
     $(".textNowp").on("click", function() {
       var fileNumber = $(this).find(".downNo").val();
@@ -281,22 +296,86 @@ $commetRows = commentList($conn,$no);
       });  
     });
 
+    //댓글 작성시 페이지 이동없이 댓글 붙이기
     $(".comtBtn").on("click", function() {
       var queryString = $("#commentForm").serialize() ;
-      console.log(queryString);
+      // console.log(queryString);
       $.ajax({
         url: 'crud.php',
         type: 'POST',
         data: queryString,
         success: function (data) {
+          if(data == "error") {
+            alert("입력되지 않은 값을 확인해주세요.");
+          }else {
             $('#commentWrap').find('form')[0].reset();
-            $('.commtLi').load(document.URL +  ' .commtLi');
+            var urlCom = (document.URL).replace('hitUp=hitUp&','');
+            // console.log(urlCom);
+            $('.commtLi').load(urlCom +  ' .commtLi');
+            $('.totalComment').load(urlCom +  ' .totalComment');
+          }
         },
         error : function (jqXHR, textStatus, errorThrown) {
             alert('ERRORS: ' + textStatus);
         }
       });
     });
+
+    //로그인 후 댓글 수정폼으로 변경 인지 삭제인 지 구분
+    $("#commSubBtn").on("click", function() {
+      var queryString = $("#commentFormTable").serialize() ;
+      // console.log(queryString);
+      $.ajax({
+        url: 'crud.php',
+        type: 'POST',
+        data: queryString,
+        success: function (data) {
+          if(data == "error") {
+            alert("다시 확인해주세요.");
+          }else {
+            $('.modal-body').find('form')[0].reset();
+            if(data == "delete") {
+              // console.log(data);
+              var urlCom = (document.URL).replace('hitUp=hitUp&','');
+              // console.log(urlCom);
+              $('.commtLi').load(urlCom +  ' .commtLi');
+              $('.totalComment').load(urlCom +  ' .totalComment');
+            }else {
+              $('.commtLi').html(data);
+            }
+            $('#commloginModal').modal("hide"); 
+          }
+        },
+        error : function (jqXHR, textStatus, errorThrown) {
+            alert('ERRORS: ' + textStatus);
+        }
+      });
+    });
+
+    //수정완료 후 변경
+    $(document).on("click","#submitCommBtn", function() {
+      var queryString = $("#commentUpForm").serialize() ;
+      // console.log(queryString);
+      $.ajax({
+        url: 'crud.php',
+        type: 'POST',
+        data: queryString,
+        success: function (data) {
+          if(data == "error") {
+            alert("다시 확인해주세요.");
+          }else {
+            $('.modal-body').find('form')[0].reset();
+            var urlCom = (document.URL).replace('hitUp=hitUp&','');
+            // console.log(urlCom);
+            $('.commtLi').load(urlCom +  ' .commtLi');
+          }
+        },
+        error : function (jqXHR, textStatus, errorThrown) {
+            alert('ERRORS: ' + textStatus);
+        }
+      });
+    });
+
   });
 </script>
 <?php

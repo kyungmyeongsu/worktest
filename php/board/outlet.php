@@ -12,7 +12,6 @@ function getDB($serverName,$serverId,$serverPassword) {
 
 //리스트 가져오기
 function getList($conn,$pageNo,$searchVal,$listScale) {
-    // global $conn;
     $pageOver = $pageNo * $listScale;
     $trimVal = trim($searchVal);
     $mainQuery =<<<SQL
@@ -161,6 +160,22 @@ SQL;
     $stmt->execute();
     $row = $stmt->fetchAll();
     return $row;
+}
+
+//해당 게시글의 전체 댓글 수 가져오기
+function TotalCommentNum($conn,$no) {
+    $query =<<<SQL
+SELECT count(*) 
+    FROM dbo.TB_board 
+        JOIN dbo.TB_comment 
+            ON TB_board.num = TB_comment.commentNum 
+                WHERE commentNum = :commentNum;
+SQL;
+    $stmt = $conn->prepare($query);
+    $stmt->bindValue(':commentNum', $no, PDO::PARAM_INT);
+    $stmt->execute();
+    $commCount = $stmt->fetchColumn();
+    return $commCount;
 }
 
 ?>
