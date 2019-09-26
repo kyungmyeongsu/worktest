@@ -70,7 +70,7 @@ $conn = getDB(serverName,serverId,serverPassword);
 
                 <?php
                 $boardNumber--;
-                endforeach;
+                endforeach; 
                 ?>
                 <!-- 반복 끝 -->
               </table>
