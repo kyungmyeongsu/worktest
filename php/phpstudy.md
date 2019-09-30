@@ -35,3 +35,17 @@ $a = $a ?? 1
 - size : 파일의 바이트 크기
 - type : 파일의 MINE ex) text/plain, image/gif
 - error : 파일업로드 시 일어난 오류
+
+## 5. file의 method
+- basename : 파일의 기본 이름을 반환
+- pathinfo : 파일의 경로 정보 반환
+- getimagesize : 이미지 정보 출력
+````````````````````````````````````````````````
+[0] : width 값
+[1] : height 값
+[2] : 이미지타입 값
+[3] : width, height 값
+[bits] : bits 값
+[channels] : channels 값
+[mine] : 파일 mine-type 값
+````````````````````````````````````````````````
