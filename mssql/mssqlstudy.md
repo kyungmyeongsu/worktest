@@ -17,16 +17,24 @@
 |SMALLMONEY| 4| -21억~+21억| 화폐단위로 사용|
 
 ## 2. mssql select top
-```SELECT TOP '숫자' * form '테이블명';```
+```
+SELECT TOP '숫자' * form '테이블명';
+```
 해당 숫자 만큼의 데이터를 보여준다.
 
 ## 3. mssql select offset 절
-```SELECT * from '테이블명' ORDER BY '필드명' '숫자' rows;```
+```
+SELECT * from '테이블명' ORDER BY '필드명' '숫자' rows;
+```
 숫자만큼 건너띄고 다음 부터 데이터를 보여준다.
 
-```SELECT * from '테이블명' ORDER BY '필드명' '숫자1' rows fetch next '숫자2' rows only;```
+```
+SELECT * from '테이블명' ORDER BY '필드명' '숫자1' rows fetch next '숫자2' rows only;
+```
 숫자1 만큼 제외하고 숫자2만큼의 갯수의 데이터를 보여준다.
 
 ## 4. mssql distinct
-```SELECT DISTINCT * form '테이블명';```
+```
+SELECT DISTINCT * form '테이블명';
+```
 중복이 되는 부분을 통합하여 보여준다.
