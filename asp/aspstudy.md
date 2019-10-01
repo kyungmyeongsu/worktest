@@ -140,3 +140,19 @@ intLength = LEN (strTest) // 문자의 길이를 반환 (13)
 ```
 문자열의 길이를 반환한다. 공백의 문자열이 입력된다면 0으로 반환한다.
 
+## nvl, nvl2, decode, coalesce
+```
+ex) SELECT NVL(COL, VAL1) FROM TABLE
+- COL값이 null 이면 VAL1을, 아니면 COL값을 리턴
+
+ex) SELECT NVL2(COL, VAL1, VAL2) FROM TABLE
+- COL값이 null이 아니면 VAL1을, 아니면 VAL2값을 리턴
+
+ex) SELECT DECODE(COL, CMP1, VAL1, CMP2, VAL2, VAL3 ) FROM TABLE
+- if-else구조라고 생각하자
+- COL이 CMP1이면, VAL1, CMP2이면 VAL2, 그것도 아니라면, VAL3를 리턴
+
+ex) SELECT COALESCE(COL, VAL1, VAL2) FROM TABLE
+- COL이 null이면 VAL1, VAL1도 null이라면 VAL2리던
+
+```
