@@ -110,3 +110,33 @@ Loop While 조건문
 ```
 조건이 참이라면 실행 구문을 계속 실행 시킨다. 단, 조건이 맞지 않더라도 한 번은 실행구문을 실행 시킨다.
 
+## 형 변환
+| 문법 | 변환 |
+|:---:|:---:|
+|cint|integer|
+|clng|long|
+|cstr|string|
+|csng|single|
+|cdate|date|
+|cbool|boolean|
+|cbyte|byte|
+|ccur|currency|
+|cdbl|double|
+|cvar|variant|
+|cverr|Error|
+
+## 대소문자 변환
+```
+strTest = "I Love You"
+strUpper = UCASE (strTest) // 대문자로 변환 (I LOVE YOU)
+strLower = LCASE (strTest) // 소문자로 변환 (i love you)
+```
+문자열의 내용을 대문자, 소문자로 변환 시켜준다.
+
+## 길이 반환
+```
+strTest = "I Love You..."
+intLength = LEN (strTest) // 문자의 길이를 반환 (13)
+```
+문자열의 길이를 반환한다. 공백의 문자열이 입력된다면 0으로 반환한다.
+
