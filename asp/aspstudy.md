@@ -89,6 +89,13 @@ Language(4) = "Power Builder"
 For Each Item In Language
 　　Response.Write Item & "<BR>"
 Next
+
+-결과-
+ASP
+PHP
+Visual Basic
+Delphi
+Power Builder
 %>
 ```
 
